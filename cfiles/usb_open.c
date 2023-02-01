@@ -4,7 +4,6 @@
 int main() {
 	RTDACUSBBufferType RTDACUSBBuffer;
 
-
 	int NoOfDetectedUSBDevices = USBOpen();
 
 	if(NoOfDetectedUSBDevices <= 0) {

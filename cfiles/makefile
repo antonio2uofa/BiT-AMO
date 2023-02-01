@@ -1,4 +1,3 @@
-# simple makefile for direct_connection.c
 !include <win32.mak>
 
 GFS_EXECS = get_fanspeed_1.exe get_fanspeed_2.exe get_fanspeed_3.exe get_fanspeed_4.exe
