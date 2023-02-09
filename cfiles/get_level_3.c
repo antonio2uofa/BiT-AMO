@@ -5,7 +5,6 @@ int main() {
 	// Initialize buffer that stores data for RT-DAC/USB
 	RTDACUSBBufferType RTDACUSBBuffer;
 
-	// Initialize variables
 	int input, clock_1;
 	int input_final = -1;
 

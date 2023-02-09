@@ -1,2 +1,0 @@
-import nidaqmx as nmx
-

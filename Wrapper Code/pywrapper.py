@@ -38,14 +38,6 @@ def set_fan_speed(c_lib, flt_speed, tube_number):
 	c_lib.BallsOutputFanSpeedDll(ctypes.c_float(flt_speed), ctypes.c_short(tube_number))
 	return
 
-def get_fan_speed(c_lib):
-	length = 4
-	myarray = np.zeros((1,length), dtype=np.int16)
-	myarray = myarray[0]
-	myarray_ptr = myarray.ctypes.data_as(ctypes.POINTER(ctypes.c_ushort))
-	c_lib.BallsReadFanSpeedDll(myarray_ptr, ctypes.c_int(length))
-	return myarray_ptr
-
 def get_level_1(c_lib):
 	e_code = ctypes.c_int32(0)
 	shottime = ctypes.c_int32(0)

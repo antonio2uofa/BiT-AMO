@@ -18,21 +18,16 @@ def init_bit():
 #	Functions Used to Process Output from C Executables					 #
 #------------------------------------------------------------------------#
 
-def text_processor(subp_output):
+def array_processor(subp_output):
 	output_text = subp_output.stdout.decode()
 
 	if output_text == '':
 		print("Cannot detect any USB devices.\n")
 		return
 
-	text_arr = output_text.split(",")
-	output_dict = {
-	'mode':int(text_arr[0]),
-	'prescaler':int(text_arr[1]),
-	'width':int(text_arr[2]),
-	}
+	fanspeed_array = [int(speed) for speed in output_text.split()]
 
-	return output_dict
+	return fanspeed_array
 
 def int_processor(subp_output):
 	output_text = subp_output.stdout.decode()
@@ -49,10 +44,10 @@ def int_processor(subp_output):
 #	Functions Used to Monitor and Control Fanspeed					 	 #
 #------------------------------------------------------------------------#
 
-def get_fanspeed(tube_num):
-	executable = "./cfiles/get_fanspeed_" + str(tube_num)
+def get_fanspeeds():
+	executable = "./cfiles/fanspeed_lv/get_fanspeeds"
 	output = run(executable, capture_output=True)
-	fan_data = text_processor(output)
+	fan_data = array_processor(output)
 
 	return fan_data
 

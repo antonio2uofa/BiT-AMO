@@ -5,7 +5,6 @@ int main() {
 	// Initialize buffer that stores data for RT-DAC/USB
 	RTDACUSBBufferType RTDACUSBBuffer;
 
-	// Initialize variables
 	int input, clock_1;
 	int input_final = -1;
 
@@ -36,7 +35,7 @@ int main() {
 		RTDACUSBBuffer.CN1Output = 0x0400080;
 		CommandSend_0111(&RTDACUSBBuffer);
 
-		// Set Trigger pin to high (Sensor 1 on schema.)
+		// Set Trigger pin to low (Sensor 1 on schema.)
 		CommandRead_0111(&RTDACUSBBuffer);
 		RTDACUSBBuffer.CN1Output = 0x0000080;
 		CommandSend_0111(&RTDACUSBBuffer);
