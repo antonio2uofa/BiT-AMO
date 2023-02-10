@@ -1,52 +1,25 @@
-from BiT_functions import *
-import multiprocessing as mp
-import matplotlib.pyplot as plt  
+from bit_functions import *
+import matplotlib.pyplot as plt
+from client_classes import *
+import numpy as np
 import time
-
-def mp_get_fanspeeds(process_queue):
-	process_queue.put(get_fanspeeds())
 
 def main():
 
-	processes, fanspeed_array, level_array, time_array = [], [], [], []
-	process_queue = mp.Queue()
+	fanspeed_array, level_array, time_array = [], [], []
+	count = 0
+	start = time.time()
+	while count < 10:
+		fanspeed_array.append(np.random.rand(1,4).tolist()[0])
+		level_array.append(np.random.rand(1,3).tolist()[0])
+		time_array.append(time.time()-start)
+		time.sleep(0.1)
+		count += 1
 
-	init_bit()
-	start_time = time.time()
+	plotter = Plotter(time_array, level_array, fanspeed_array)
+	plotter.single_plot()
+	plotter.data_to_csv("./testing.csv")
 
-	for i in range(0, 102, 2):
-		set_fanspeed(3, i)
-		set_fanspeed(2, i)
-		set_fanspeed(4, i)
-
-		level_array.append([
-                get_level(2),
-                get_level(3),
-                get_level(4),
-            ])
-
-		process = mp.Process(target=mp_get_fanspeeds, args=(process_queue,))
-		processes.append(process)
-		process.start()
-
-		loop_time = time.time()
-
-		time_array.append(loop_time-start_time)
-		time.sleep(0.5)
-
-
-	for process in processes:
-		process.join()
-
-	while not process_queue.empty():
-		fanspeed_array.append(process_queue.get())
-
-	x = time_array
-	y1 = level_array
-	y2 = fanspeed_array
-
-	plt.plot(x, y1, '-o', x, y2, '-o')
-	plt.show()
 
 if __name__ == '__main__':
 	main()

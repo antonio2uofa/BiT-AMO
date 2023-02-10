@@ -1,6 +1,6 @@
 import asyncio
-import BiT_functions as bit 
-import fan_speed_wrapper as fsw
+import bit_functions as bit 
+from server_classes import FanSpeedWrapper
 
 from asyncua import Server, ua
 from asyncua.common.methods import uamethod
@@ -10,7 +10,7 @@ ENDPOINT = "opc.tcp://142.244.38.72:4840/freeopcua/server/"
 SERVER_NAME = "Antonio OPC-UA Server"
 SECURITY_ARRAY = [ua.SecurityPolicyType.NoSecurity, ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt, ua.SecurityPolicyType.Basic256Sha256_Sign]
 URI = "http://examples.freeopcua.github.io"
-_WRAPPER = fsw.FanSpeedWrapper()
+_WRAPPER = FanSpeedWrapper()
 
 @uamethod
 def set_fanspeed(parent, tube_num, level):
@@ -61,10 +61,10 @@ async def main():
         while True:
             await asyncio.sleep(0.1)
     """
-    Goal was to use this loop to constantly update values
-    However it interferes with the client calling the methods
-    Implemented above since only one program can communicate
-    with the Rt-DAC USB at a time
+    Goal was to use this loop to constantly update values.
+    However, it interferes with the client calling the methods
+    implemented above since only one program can communicate
+    with the Rt-DAC USB at a time.
     """
     #        await level_1.write_value(bit.get_level(1))
     #        await level_2.write_value(bit.get_level(2))
