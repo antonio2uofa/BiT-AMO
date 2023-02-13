@@ -44,13 +44,6 @@ def int_processor(subp_output):
 #	Functions Used to Monitor and Control Fanspeed					 	 #
 #------------------------------------------------------------------------#
 
-def get_fanspeeds():
-	executable = "./cfiles/fanspeed_lv/get_fanspeeds"
-	output = run(executable, capture_output=True)
-	fan_data = array_processor(output)
-
-	return fan_data
-
 def set_fanspeed(tube_num, level):
 	executable = "./cfiles/set_fanspeed_" + str(tube_num)
 	max_width = 4095

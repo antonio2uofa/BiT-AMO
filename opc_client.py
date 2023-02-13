@@ -11,7 +11,7 @@ CSV_PATH = "./Data/bit_data.csv"
 
 async def main():
 
-    fan_speed_array, level_array, time_array, voltage_array = [], [], [], []
+    fanspeed_array, level_array, time_array, voltage_array = [], [], [], []
 
     print(f"Connecting to {URL} ...")
     async with Client(url=URL) as client:
@@ -38,7 +38,7 @@ async def main():
         start_time = time.time()
         while(count < 10):
             count += 1
-            fan_speed_array.append(await bit_obj.call_method(f"{ns_idx}:get_fan_speeds"))
+            fanspeed_array.append(await bit_obj.call_method(f"{ns_idx}:get_fanspeeds"))
 
             level_array.append([
                 await bit_obj.call_method(f"{ns_idx}:get_level", 4),
@@ -49,7 +49,7 @@ async def main():
             loop_time = time.time()
             time_array.append(loop_time-start_time)
 
-        plotter = Plotter(time_array, level_array, fan_speed_array)
+        plotter = Plotter(time_array, level_array, fanspeed_array)
         plotter.data_to_csv(CSV_PATH)
         plotter.single_plot()
 

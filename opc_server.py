@@ -43,7 +43,7 @@ async def main():
     # Adding methods to our object in OPC-UA
     await myobj.add_method(idx, "set_fanspeed", set_fanspeed, [ua.VariantType.Int32, ua.VariantType.Int32], [])
     await myobj.add_method(idx, "get_level", get_level, [ua.VariantType.Int32], [ua.VariantType.Int32])
-    await myobj.add_method(idx, "get_fan_speeds", get_fan_speeds, [], [ua.VariantType.Int32])
+    await myobj.add_method(idx, "get_fanspeeds", get_fanspeeds, [], [ua.VariantType.Int32])
 
     # Adding variables that represent the ball levels
     level_1 = await myobj.add_variable(idx, "Level 1", bit.get_level(1))

@@ -6,14 +6,14 @@ from cycler import cycler
 Plotter class to be used with client when processing and plotting BiT data.
 """
 class Plotter:
-	def __init__(self, time_array, level_array, fan_speed_array, custom_cycler=None):
+	def __init__(self, time_array, level_array, fanspeed_array, custom_cycler=None):
 		if custom_cycler is None:
 			self.custom_cycler = cycler(color=['c', 'm', 'k'])
 		else:
 			self.custom_cycler = custom_cycler
 		self.time_array = time_array
 		self.level_array = level_array
-		self.fan_speed_array = fan_speed_array
+		self.fanspeed_array = fanspeed_array
 
 	"""
 	Method to combine both subplots of data onto one display.
@@ -39,10 +39,10 @@ class Plotter:
 
 	def data_to_csv(self, csv_path):
 		# Exporting data to .csv file using pandas.
-		fan_speed_df = pd.DataFrame(self.fan_speed_array)
+		fanspeed_df = pd.DataFrame(self.fanspeed_array)
 		level_df = pd.DataFrame(self.level_array)
 		time_df = pd.DataFrame(self.time_array)
 
-		fan_speed_df.to_csv(csv_path, header=["Fan #4", "Fan #3", "Fan #2", "Fan #1"], index=False)
+		fanspeed_df.to_csv(csv_path, header=["Fan #4", "Fan #3", "Fan #2", "Fan #1"], index=False)
 		level_df.to_csv(csv_path, mode='a', header=["Level #4", "Level #3", "Level #2"], index=False)
 		time_df.to_csv(csv_path, float_format='%.1f', mode='a', header=["Time (s)"], index=False)
