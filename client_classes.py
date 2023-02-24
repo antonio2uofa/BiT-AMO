@@ -11,6 +11,7 @@ class Plotter:
 			self.custom_cycler = cycler(color=['c', 'm', 'k'])
 		else:
 			self.custom_cycler = custom_cycler
+
 		self.time_array = time_array
 		self.level_array = level_array
 		self.fanspeed_array = fanspeed_array
@@ -46,3 +47,18 @@ class Plotter:
 		fanspeed_df.to_csv(csv_path, header=["Fan #4", "Fan #3", "Fan #2", "Fan #1"], index=False)
 		level_df.to_csv(csv_path, mode='a', header=["Level #4", "Level #3", "Level #2"], index=False)
 		time_df.to_csv(csv_path, float_format='%.1f', mode='a', header=["Time (s)"], index=False)
+
+class Reader:
+	def __init__(self, csv_path):
+		self.csv_path = csv_path
+		self.fan_gain_df = pd.read_csv(csv_path)
+
+	def get_fan_gains(self):
+		headers = list(self.fan_gain_df.columns.values)
+
+		tube4_gains = self.fan_gain_df[f"{headers[0]}"].to_list()
+		tube3_gains = self.fan_gain_df[f"{headers[1]}"].to_list()
+		tube2_gains = self.fan_gain_df[f"{headers[2]}"].to_list()
+		tube1_gains = self.fan_gain_df[f"{headers[3]}"].to_list()
+
+		return tube4_gains, tube3_gains, tube2_gains, tube1_gains

@@ -5,13 +5,17 @@ from asyncua import Client, ua
 
 
 # Define connectivity strings
-URL = "opc.tcp://142.244.38.72:4840/freeopcua/server/"
+URL = "opc.tcp://BB0253:4840/freeopcua/server/"
 NAMESPACE = "http://examples.freeopcua.github.io"
 CSV_PATH = "./Data/bit_data.csv"
+RGS_CSV = "./Data/rgs_signals.csv"
 
 async def main():
 
-    fanspeed_array, level_array, time_array, voltage_array = [], [], [], []
+    gain_reader = Reader(RGS_CSV)
+    gain4, gain3, gain2, gain1 = gain_reader.get_fan_gains()
+
+    fanspeed_array, level_array, time_array = [], [], []
 
     print(f"Connecting to {URL} ...")
     async with Client(url=URL) as client:
@@ -29,15 +33,13 @@ async def main():
         time. We get the time of each call and store those values for plotting.
         """
 
-        count = 0;
-        await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 1, 100)
-        await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 2, 60)
-        await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 3, 70)
-        await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 4, 55)
-
         start_time = time.time()
-        while(count < 10):
-            count += 1
+        for i in range(1, len(gain1), 1):
+            await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 4, gain4[i])
+            await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 3, gain3[i])
+            await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 2, gain2[i])
+            await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 1, gain1[i])
+
             fanspeed_array.append(await bit_obj.call_method(f"{ns_idx}:get_fanspeeds"))
 
             level_array.append([
@@ -50,6 +52,7 @@ async def main():
             time_array.append(loop_time-start_time)
 
         plotter = Plotter(time_array, level_array, fanspeed_array)
+
         plotter.data_to_csv(CSV_PATH)
         plotter.single_plot()
 

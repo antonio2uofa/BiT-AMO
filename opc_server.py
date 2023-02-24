@@ -6,7 +6,7 @@ from asyncua import Server, ua
 from asyncua.common.methods import uamethod
 
 # Global variables
-ENDPOINT = "opc.tcp://142.244.38.72:4840/freeopcua/server/"
+ENDPOINT = "opc.tcp://BB0253:4840/freeopcua/server/"
 SERVER_NAME = "Antonio OPC-UA Server"
 SECURITY_ARRAY = [ua.SecurityPolicyType.NoSecurity, ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt, ua.SecurityPolicyType.Basic256Sha256_Sign]
 URI = "http://examples.freeopcua.github.io"
@@ -21,8 +21,8 @@ def get_level(parent, tube_num):
    return bit.get_level(tube_num)
 
 @uamethod
-def get_fan_speeds(parent):
-    return _WRAPPER.get_fan_speeds()
+def get_fanspeeds(parent):
+    return _WRAPPER.get_fanspeeds()
 
 async def main():
 
