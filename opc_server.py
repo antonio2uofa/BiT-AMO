@@ -8,7 +8,6 @@ from asyncua.common.methods import uamethod
 # Global variables
 ENDPOINT = "opc.tcp://BB0253:4840/freeopcua/server/"
 SERVER_NAME = "Antonio OPC-UA Server"
-SECURITY_ARRAY = [ua.SecurityPolicyType.NoSecurity, ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt, ua.SecurityPolicyType.Basic256Sha256_Sign]
 URI = "http://examples.freeopcua.github.io"
 _WRAPPER = FanSpeedWrapper()
 
@@ -33,7 +32,6 @@ async def main():
     # bind the server to an IP
     server.set_endpoint(ENDPOINT)
     server.set_server_name(SERVER_NAME)
-    server.set_security_policy(SECURITY_ARRAY)
 
     # populating our address space
     # server.nodes, contains links to very common nodes like objects and root
