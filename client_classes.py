@@ -1,6 +1,11 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from cycler import cycler
+import urllib.request
+import cv2
+import numpy as np
+
+CAM_URL = 'http://142.244.38.73/image/jpeg.cgi'
 
 """
 Plotter class to be used with client when processing and plotting BiT data.
@@ -48,8 +53,11 @@ class Plotter:
 		level_df.to_csv(csv_path, mode='a', header=["Level #4", "Level #3", "Level #2"], index=False)
 		time_df.to_csv(csv_path, float_format='%.1f', mode='a', header=["Time (s)"], index=False)
 
+
+
 class Reader:
 	def __init__(self, csv_path):
+		self.count: int = 0
 		self.csv_path = csv_path
 		self.fan_gain_df = pd.read_csv(csv_path)
 
@@ -62,3 +70,10 @@ class Reader:
 		tube1_gains = self.fan_gain_df[f"{headers[3]}"].to_list()
 
 		return tube4_gains, tube3_gains, tube2_gains, tube1_gains
+
+	def save_imgs(self, path_to_folder="./Images/"):
+		with urllib.request.urlopen(CAM_URL) as img_src:
+			image_arr = np.asarray(bytearray(img_src.read()), dtype=np.uint8)
+			image2 = cv2.imdecode(image_arr, 0)  # rgb image (480 x 640 x 3 array)
+			cv2.imwrite('{0}result{1}.jpg'.format(path_to_folder, self.count), image2)
+			self.count += 1

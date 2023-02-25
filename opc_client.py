@@ -7,8 +7,10 @@ from asyncua import Client, ua
 # Define connectivity strings
 URL = "opc.tcp://BB0253:4840/freeopcua/server/"
 NAMESPACE = "http://examples.freeopcua.github.io"
+
 CSV_PATH = "./Data/bit_data.csv"
 RGS_CSV = "./Data/rgs_signals.csv"
+IMG_PATH = "./Data/Images/"
 
 async def main():
 
@@ -47,6 +49,8 @@ async def main():
                 await bit_obj.call_method(f"{ns_idx}:get_level", 3),
                 await bit_obj.call_method(f"{ns_idx}:get_level", 2),
                 ])
+            
+            gain_reader.save_imgs(IMG_PATH)
 
             loop_time = time.time()
             time_array.append(loop_time-start_time)
