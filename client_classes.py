@@ -4,6 +4,7 @@ from cycler import cycler
 import urllib.request
 import cv2
 import numpy as np
+from typing import List
 
 CAM_URL = 'http://142.244.38.73/image/jpeg.cgi'
 
@@ -11,7 +12,8 @@ CAM_URL = 'http://142.244.38.73/image/jpeg.cgi'
 Plotter class to be used with client when processing and plotting BiT data.
 """
 class Plotter:
-	def __init__(self, time_array, level_array, fanspeed_array, custom_cycler=None):
+	def __init__(self, time_array: List[float], level_array: List[float],
+	    fanspeed_array: List[float], custom_cycler=None):
 		if custom_cycler is None:
 			self.custom_cycler = cycler(color=['c', 'm', 'k'])
 		else:
@@ -28,7 +30,7 @@ class Plotter:
 		fs_lines, level_lines = [], []
 		fig, ax1 = plt.subplots(figsize=(14, 8))
 
-		fs_lines = ax1.plot(self.time_array, self.fan_speed_array, '.-')
+		fs_lines = ax1.plot(self.time_array, self.fanspeed_array, '.-')
 		ax1.legend(fs_lines, ["Fan 4", "Fan 3", " Fan 2", " Fan 1"], bbox_to_anchor=(1.04, 1), loc="upper left")
 		ax1.set_xlabel("Time (s)")
 		ax1.set_ylabel("Fan Speed (rpm)")
@@ -43,7 +45,7 @@ class Plotter:
 		plt.savefig(pdf_path)
 		plt.show()
 
-	def data_to_csv(self, csv_path):
+	def data_to_csv(self, csv_path: str):
 		# Exporting data to .csv file using pandas.
 		fanspeed_df = pd.DataFrame(self.fanspeed_array)
 		level_df = pd.DataFrame(self.level_array)
@@ -56,7 +58,7 @@ class Plotter:
 
 
 class Reader:
-	def __init__(self, csv_path):
+	def __init__(self, csv_path: str):
 		self.count: int = 0
 		self.csv_path = csv_path
 		self.fan_gain_df = pd.read_csv(csv_path)

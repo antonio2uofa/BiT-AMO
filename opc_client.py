@@ -1,7 +1,8 @@
 import asyncio
 import time
 from client_classes import *
-from asyncua import Client, ua
+from asyncua import Client
+from typing import List
 
 
 # Define connectivity strings
@@ -15,6 +16,8 @@ IMG_PATH = "./Data/Images/"
 async def main():
 
     gain_reader = Reader(RGS_CSV)
+
+    gain4, gain3, gain2, gain1 = [], [], [], []
     gain4, gain3, gain2, gain1 = gain_reader.get_fan_gains()
 
     fanspeed_array, level_array, time_array = [], [], []
@@ -37,6 +40,7 @@ async def main():
 
         start_time = time.time()
         for i in range(1, len(gain1), 1):
+
             await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 4, gain4[i])
             await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 3, gain3[i])
             await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 2, gain2[i])
@@ -48,12 +52,11 @@ async def main():
                 await bit_obj.call_method(f"{ns_idx}:get_level", 4),
                 await bit_obj.call_method(f"{ns_idx}:get_level", 3),
                 await bit_obj.call_method(f"{ns_idx}:get_level", 2),
-                ])
-            
+            ])
+
             gain_reader.save_imgs(IMG_PATH)
 
-            loop_time = time.time()
-            time_array.append(loop_time-start_time)
+            time_array.append(time.time() - start_time)
 
         plotter = Plotter(time_array, level_array, fanspeed_array)
 

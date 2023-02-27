@@ -12,11 +12,11 @@ URI = "http://examples.freeopcua.github.io"
 _WRAPPER = FanSpeedWrapper()
 
 @uamethod
-def set_fanspeed(parent, tube_num, level):
+def set_fanspeed(parent, tube_num: int, level: int):
     bit.set_fanspeed(tube_num, level)
 
 @uamethod
-def get_level(parent, tube_num):
+def get_level(parent, tube_num: int):
    return bit.get_level(tube_num)
 
 @uamethod
@@ -44,10 +44,10 @@ async def main():
     await myobj.add_method(idx, "get_fanspeeds", get_fanspeeds, [], [ua.VariantType.Int32])
 
     # Adding variables that represent the ball levels
-    level_1 = await myobj.add_variable(idx, "Level 1", bit.get_level(1))
-    level_2 = await myobj.add_variable(idx, "Level 2", bit.get_level(2))
-    level_3 = await myobj.add_variable(idx, "Level 3", bit.get_level(3))
-    level_4 = await myobj.add_variable(idx, "Level 4", bit.get_level(4))
+    level_1 = await myobj.add_variable(idx, "Level 1", get_level(1))
+    level_2 = await myobj.add_variable(idx, "Level 2", get_level(2))
+    level_3 = await myobj.add_variable(idx, "Level 3", get_level(3))
+    level_4 = await myobj.add_variable(idx, "Level 4", get_level(4))
     
     # Set variables to be writable by clients
     await level_1.set_writable()
