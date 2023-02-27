@@ -24,6 +24,8 @@ def get_fanspeeds(parent):
     return _WRAPPER.get_fanspeeds()
 
 async def main():
+	# Load into memory functions from bit
+	_WRAPPER.setup_bit()
 
     # Start server
     server = Server()
@@ -44,16 +46,16 @@ async def main():
     await myobj.add_method(idx, "get_fanspeeds", get_fanspeeds, [], [ua.VariantType.Int32])
 
     # Adding variables that represent the ball levels
-    level_1 = await myobj.add_variable(idx, "Level 1", get_level(1))
-    level_2 = await myobj.add_variable(idx, "Level 2", get_level(2))
-    level_3 = await myobj.add_variable(idx, "Level 3", get_level(3))
-    level_4 = await myobj.add_variable(idx, "Level 4", get_level(4))
+    #level_1 = await myobj.add_variable(idx, "Level 1", get_level(1))
+    #level_2 = await myobj.add_variable(idx, "Level 2", get_level(2))
+    #level_3 = await myobj.add_variable(idx, "Level 3", get_level(3))
+    #level_4 = await myobj.add_variable(idx, "Level 4", get_level(4))
     
     # Set variables to be writable by clients
-    await level_1.set_writable()
-    await level_2.set_writable()
-    await level_3.set_writable()
-    await level_4.set_writable()
+    #await level_1.set_writable()
+    #await level_2.set_writable()
+    #await level_3.set_writable()
+    #await level_4.set_writable()
 
     async with server:
         while True:

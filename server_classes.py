@@ -14,10 +14,18 @@ class FanSpeedWrapper:
 		self.c_lib = ctypes.cdll.LoadLibrary(path_name)
 		self.c_type_arr = (ctypes.c_ushort * 4)()
 		self.get_fanspeeds()
-		bit.init_bit()
 
 	def get_fanspeeds(self):
 		self.c_lib.BallsReadFanSpeedDll(self.c_type_arr, ctypes.c_int(4))
 		c_list = np.ctypeslib.as_array(self.c_type_arr)
 		py_map = map(lambda x: x.item(), c_list)
 		return list(py_map)
+
+	def setup_bit(self):
+		bit.init_bit()
+
+		for i in range(1,5,1):
+			bit.get_level(i)
+			bit.set_fanspeed(i, 0)
+
+
