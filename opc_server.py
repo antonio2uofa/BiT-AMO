@@ -25,7 +25,7 @@ def get_fanspeeds(parent):
 
 async def main():
 	# Load into memory functions from bit
-	_WRAPPER.setup_bit()
+    _WRAPPER.setup_bit()
 
     # Start server
     server = Server()
