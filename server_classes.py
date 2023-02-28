@@ -23,9 +23,8 @@ class FanSpeedWrapper:
 
 	def setup_bit(self):
 		bit.init_bit()
+		bit.set_fanspeed(1, 100)
 
 		for i in range(1, 5, 1):
 			bit.get_level(i)
-			bit.set_fanspeed(i, 100)
-
 
