@@ -39,12 +39,12 @@ async def main():
         """
 
         start_time = time.time()
-        for i in range(1, len(gain1), 1):
+        for i in range(1, 100, 1):
 
             await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 4, gain4[i])
             await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 3, gain3[i])
             await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 2, gain2[i])
-            # await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 1, gain1[i])
+            # await bit_obj.call_method(f"{ns_idx}:set_fanspeed", 1, 100)
 
             fanspeed_array.append(await bit_obj.call_method(f"{ns_idx}:get_fanspeeds"))
 

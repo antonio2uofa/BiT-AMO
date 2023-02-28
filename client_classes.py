@@ -32,7 +32,7 @@ class Plotter:
 
 		fs_lines = ax1.plot(self.time_array, self.fanspeed_array, '.-')
 		# ax1.legend(fs_lines, ["Fan 4", "Fan 3", " Fan 2", " Fan 1"], bbox_to_anchor=(1.04, 1), loc="upper left")
-		ax1.legend(fs_lines, ["Fan 4", "Fan 3", " Fan 2"], bbox_to_anchor=(1.04, 1), loc="upper left")
+		ax1.legend(fs_lines, ["Fan 4", "Fan 3", " Fan 2", "Fan 1"], bbox_to_anchor=(1.04, 1), loc="upper left")
 		ax1.set_xlabel("Time (s)")
 		ax1.set_ylabel("Fan Speed (rpm)")
 
@@ -52,8 +52,8 @@ class Plotter:
 		level_df = pd.DataFrame(self.level_array)
 		time_df = pd.DataFrame(self.time_array)
 
-		# fanspeed_df.to_csv(csv_path, header=["Fan #4", "Fan #3", "Fan #2", "Fan #1"], index=False)
-		fanspeed_df.to_csv(csv_path, header=["Fan #4", "Fan #3", "Fan #2"], index=False)
+		fanspeed_df.to_csv(csv_path, header=["Fan #4", "Fan #3", "Fan #2", "Fan #1"], index=False)
+		# fanspeed_df.to_csv(csv_path, header=["Fan #4", "Fan #3", "Fan #2"], index=False)
 		level_df.to_csv(csv_path, mode='a', header=["Level #4", "Level #3", "Level #2"], index=False)
 		time_df.to_csv(csv_path, float_format='%.1f', mode='a', header=["Time (s)"], index=False)
 
