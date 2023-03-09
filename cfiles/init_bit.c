@@ -4,7 +4,6 @@
 int main() {
 	// Initialize buffer that stores data for RT-DAC/USB
 	RTDACUSBBufferType RTDACUSBBuffer;
-	GeneratorType Generator;
 
 	// Initialize iterator
 	int PWMPin;
@@ -28,11 +27,11 @@ int main() {
 		RTDACUSBBuffer.TmrCnt[1].Reset = 1;
 
 		// Initialize signal generator with default values
-		Generator.St1Len = 10;
-		Generator.St2Len = 10;
-		Generator.Enable = 1;
-		Generator.SwStart = 1;
-		Generator.InfiniteGeneration = 1;
+		RTDACUSBBuffer.Generator[0].St1Len = 10;
+		RTDACUSBBuffer.Generator[0].St2Len = 10;
+		RTDACUSBBuffer.Generator[0].Enable = 1;
+		RTDACUSBBuffer.Generator[0].SwStart = 1;
+		RTDACUSBBuffer.Generator[0].InfiniteGeneration = 1;
 
 		// Initialize PWM pulse values
 		for(PWMPin = 0; PWMPin < 4; PWMPin++) {

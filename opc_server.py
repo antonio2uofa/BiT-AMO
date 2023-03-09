@@ -23,6 +23,10 @@ def get_level(parent, tube_num: int):
 def get_fanspeeds(parent):
     return _WRAPPER.get_fanspeeds()
 
+@uamethod
+def reset_bit(parent):
+    _WRAPPER.reset_bit()
+
 async def main():
 	# Load into memory functions from bit
     _WRAPPER.setup_bit()
@@ -44,6 +48,7 @@ async def main():
     await myobj.add_method(idx, "set_fanspeed", set_fanspeed, [ua.VariantType.Int32, ua.VariantType.Int32], [])
     await myobj.add_method(idx, "get_level", get_level, [ua.VariantType.Int32], [ua.VariantType.Int32])
     await myobj.add_method(idx, "get_fanspeeds", get_fanspeeds, [], [ua.VariantType.Int32])
+    await myobj.add_method(idx, "reset_bit", reset_bit, [], [])
 
     # Adding variables that represent the ball levels
     #level_1 = await myobj.add_variable(idx, "Level 1", get_level(1))
