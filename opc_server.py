@@ -12,6 +12,10 @@ URI = "http://examples.freeopcua.github.io"
 _WRAPPER = FanSpeedWrapper()
 
 @uamethod
+def set_fanspeeds(parent, fan_4: int, fan_3: int, fan_2: int, fan_1: int, normalized):
+    bit.set_fanspeeds(fan_4, fan_3, fan_2, fan_1, normalized)
+
+@uamethod
 def set_fanspeed(parent, tube_num: int, level: int):
     bit.set_fanspeed(tube_num, level)
 
@@ -28,7 +32,7 @@ def reset_bit(parent):
     _WRAPPER.reset_bit()
 
 async def main():
-	# Load into memory functions from bit
+    # Load into memory functions from bit
     _WRAPPER.setup_bit()
 
     # Start server
@@ -45,6 +49,8 @@ async def main():
     myobj = await server.nodes.objects.add_object(idx, "BIT Object")
 
     # Adding methods to our object in OPC-UA
+    await myobj.add_method(idx, "set_fanspeeds", set_fanspeeds, [ua.VariantType.Int32,
+    ua.VariantType.Int32, ua.VariantType.Int32, ua.VariantType.Int32, ua.VariantType.Boolean], [])
     await myobj.add_method(idx, "set_fanspeed", set_fanspeed, [ua.VariantType.Int32, ua.VariantType.Int32], [])
     await myobj.add_method(idx, "get_level", get_level, [ua.VariantType.Int32], [ua.VariantType.Int32])
     await myobj.add_method(idx, "get_fanspeeds", get_fanspeeds, [], [ua.VariantType.Int32])

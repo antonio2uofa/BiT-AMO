@@ -29,6 +29,5 @@ class FanSpeedWrapper:
 			bit.get_level(i)
 
 	def reset_bit(self):
-		for i in range(2, 5, 1):
-			bit.set_fanspeed(i, 0)
+		bit.set_fanspeeds(0, 0, 0, 100)
 

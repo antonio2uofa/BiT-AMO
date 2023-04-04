@@ -1,10 +1,10 @@
 !include <win32.mak>
 
-SFS_EXECS = set_fanspeed_1.exe set_fanspeed_2.exe set_fanspeed_3.exe set_fanspeed_4.exe
+SFS_EXECS = set_fanspeeds.exe set_fanspeed_1.exe set_fanspeed_2.exe set_fanspeed_3.exe set_fanspeed_4.exe
 
-SFS_OBJS = set_fanspeed_1.obj set_fanspeed_2.obj set_fanspeed_3.obj set_fanspeed_4.obj
+SFS_OBJS = set_fanspeeds.obj set_fanspeed_1.obj set_fanspeed_2.obj set_fanspeed_3.obj set_fanspeed_4.obj
 
-SFS_SOURCE = set_fanspeed_1.c set_fanspeed_2.c set_fanspeed_3.c set_fanspeed_4.c
+SFS_SOURCE = set_fanspeeds.c set_fanspeed_1.c set_fanspeed_2.c set_fanspeed_3.c set_fanspeed_4.c
 
 #------------------------------------------------------------------------#
 
@@ -39,6 +39,8 @@ $(SFS_EXECS): $(SFS_OBJS) $(LNK_FILES)
 	LINK set_fanspeed_3.obj $(LNK_FILES)
 
 	LINK set_fanspeed_4.obj $(LNK_FILES)
+
+	LINK set_fanspeeds.obj $(LNK_FILES)
 
 #------------------------------------------------------------------------#
 
