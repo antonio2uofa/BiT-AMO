@@ -1,6 +1,6 @@
 clear;
 
-N = 100;
+N = 7200;
 Nu = 1;
 ch = 1;
 Type = 'rgs';
@@ -8,18 +8,19 @@ Type = 'rgs';
 Band_prbs = [0 1];
 Range_prbs = [50 68];
 
-Band1 = [0.01, 0.27];
-Band2 = [0.01, 0.60];
-Range4 = [54 60];
-Range3 = [52 68];
-Range2 = [57 65];
+Band2 = [0.01, 0.27];
+Band3 = [0.01, 0.27];
+Band4 = [0.01, 0.27];
+
+Range4 = [50 61];
+Range3 = [45 70];
+Range2 = [55 66];
 Range1 = [55 65];
 
-U4 = idinput([N, ch, Nu], Type, Band1, Range4);
-%U3 = idinput(480,'prbs',Band_prbs,Range_prbs);
-U3 = idinput([N, ch, Nu], Type, Band2, Range3);
-U2 = idinput([N, ch, Nu], Type, Band1, Range2);
-U1 = idinput([N, ch, Nu], Type, Band1, Range1);
+U4 = idinput([N, ch, Nu], Type, Band4, Range4);
+U3 = idinput([N, ch, Nu], Type, Band3, Range3);
+U2 = idinput([N, ch, Nu], Type, Band2, Range2);
+U1 = idinput([N, ch, Nu], Type, Band2, Range1);
 
 U4 = cast(U4, 'int16');
 U3 = cast(U3, 'int16');
@@ -32,6 +33,6 @@ step_table.Properties.VariableNames(1:4) = {
 'T4 Fan Factor', 'T3 Fan Factor', 'T2 Fan Factor', 'T1 Fan Factor'
     };
 
-writetable(step_table, 'rgs_signals.csv');
+writetable(step_table, 'rgs_signals_6.csv');
 
 clc;
