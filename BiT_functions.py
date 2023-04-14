@@ -1,5 +1,4 @@
 from subprocess import run
-import sys
 
 #------------------------------------------------------------------------#
 #	Functions Used to Connect to USB and Initialize Pin Functions		 #
