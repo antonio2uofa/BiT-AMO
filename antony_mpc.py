@@ -1,6 +1,4 @@
 from scipy.optimize import minimize
-import time
-import asyncio
 from client_classes import sample
 import numpy as np
 
@@ -97,8 +95,7 @@ class MPC:
 
             # Get current height
             uk = self.denormalize(gain_minmax, uk)
-            loop = asyncio.get_running_loop()
-            speed, self.experiment_height[i] = loop.run_until_complete(sample(self.ns_idx, self.bit_obj, uk[0], uk[1], uk[2], 100, normalized=False))
+            speed, self.experiment_height[i] = sample(self.ns_idx, self.bit_obj, uk[0], uk[1], uk[2], 100, normalized=False)
 
             # Set point assignment
             self.height_sp[i] = np.tile(sps[sp_index], self.num_tubes)

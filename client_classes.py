@@ -2,14 +2,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from ultralytics import YOLO
-from cycler import cycler
-from typing import List
 from datetime import datetime
 
-import asyncio
+import time
 import glob
 import cv2
-import multiprocessing as mp
 
 CAM_URL = 'http://142.244.38.73/image/jpeg.cgi'
 PDF_PATH = './Data/bit_data/bit_plot.pdf'
@@ -195,27 +192,27 @@ class Reader:
     def __del__(self):
         self.cap.release()
 
-async def sample(ns_idx, bit_obj, gain4, gain3, gain2, gain1, normalized=False, stall=0):
-    await bit_obj.call_method(f"{ns_idx}:set_fanspeeds", gain4, gain3, gain2, gain1, normalized)
-    await asyncio.sleep(stall)
+def sample(ns_idx, bit_obj, gain4, gain3, gain2, gain1, normalized=False, stall=0):
+    bit_obj.call_method(f"{ns_idx}:set_fanspeeds", gain4, gain3, gain2, gain1, normalized)
+    time.sleep(stall)
 
-    fanspeed_array = np.array(await bit_obj.call_method(f"{ns_idx}:get_fanspeeds"))
+    fanspeed_array = np.array(bit_obj.call_method(f"{ns_idx}:get_fanspeeds"))
     level_array = np.array([
-        await bit_obj.call_method(f"{ns_idx}:get_level", 4),
-        await bit_obj.call_method(f"{ns_idx}:get_level", 3),
-        await bit_obj.call_method(f"{ns_idx}:get_level", 2),
+        bit_obj.call_method(f"{ns_idx}:get_level", 4),
+        bit_obj.call_method(f"{ns_idx}:get_level", 3),
+        bit_obj.call_method(f"{ns_idx}:get_level", 2),
     ])
     return fanspeed_array, level_array
 
-async def calibrate(ns_idx, bit_obj, stall=1):
+def calibrate(ns_idx, bit_obj, stall=1):
     maxmin_array = [np.zeros((10, 3)) for i in range(4)]
     for i in range(10):
         print(f"Loop number: {i}")
-        speed_max, level_min = await sample(ns_idx, bit_obj, 0, 0, 0, 100, normalized=False, stall=stall)
+        speed_max, level_min = sample(ns_idx, bit_obj, 0, 0, 0, 100, normalized=False, stall=stall)
         maxmin_array[0][i] = speed_max[0:3]
         maxmin_array[3][i] = level_min
 
-        speed_min, level_max = await sample(ns_idx, bit_obj, 100, 100, 100, 100, normalized=False, stall=stall)
+        speed_min, level_max = sample(ns_idx, bit_obj, 100, 100, 100, 100, normalized=False, stall=stall)
         maxmin_array[1][i] = speed_min[0:3]
         maxmin_array[2][i] = level_max
 
