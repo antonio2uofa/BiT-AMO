@@ -3,12 +3,14 @@ import pandas as pd
 import numpy as np
 from ultralytics import YOLO
 from datetime import datetime
+import concurrent.futures as cf
+import threading
+from collections import deque
 
 import time
 import glob
 import cv2
 
-CAM_URL = 'http://142.244.38.73/image/jpeg.cgi'
 PDF_PATH = './Data/bit_data/bit_plot.pdf'
 MODEL_PATH = './Data/bit_data/bit_data_model.csv'
 
@@ -106,7 +108,7 @@ class Plotter:
 Class to wrap all image processing functions.
 """
 class Reader:
-    def __init__(self, csv_path: str):
+    def __init__(self, csv_path: str, ns_idx: str, bit_obj: str, my_deque: deque):
         # Initialized for distortion matrix
         self.distortion_path: str = './Distortion/*.jpg'
         self.ret, self.mtx, self.dist = self._get_distortion_mat()
@@ -115,13 +117,19 @@ class Reader:
         self.model = YOLO("./Data/Object_Detection/Small/best2.pt")  # load a custom model
 
         # Initialized for read_fan_gains
+        self.ns_idx = ns_idx
+        self.bit_obj = bit_obj
         self.csv_path: str = csv_path
         self.fan_gain_df = pd.read_csv(csv_path)
 
         # Initialized for read_frames
         self.count: int = 0
         self.video_url: str = 'http://admin:LogDeltav50@142.244.38.73/video/mjpg.cgi'
-        self.cap = cv2.VideoCapture(self.video_url)
+
+        # self.cap = cv2.VideoCapture(self.video_url)
+        self.my_deque = my_deque
+        self.executor = cf.ThreadPoolExecutor(max_workers=2)
+        self.track_balls()
 
     def _get_distortion_mat(self):
         # termination criteria
@@ -148,6 +156,15 @@ class Reader:
         ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
         return ret, mtx, dist
 
+    def read_fan_gains(self):
+        headers = list(self.fan_gain_df.columns.values)
+
+        tube4_gains = self.fan_gain_df[f"{headers[0]}"].to_list()
+        tube3_gains = self.fan_gain_df[f"{headers[1]}"].to_list()
+        tube2_gains = self.fan_gain_df[f"{headers[2]}"].to_list()
+        tube1_gains = self.fan_gain_df[f"{headers[3]}"].to_list()
+        return tube4_gains, tube3_gains, tube2_gains, tube1_gains
+
     def rm_distortion(self, dist_image):
         # read distorted image & get new matrix
         h,  w = dist_image.shape[:2]
@@ -161,61 +178,96 @@ class Reader:
         cv2.imwrite('calibresult.png', undist_image)
         return undist_image
 
-    def track_balls(self, image):
-        cropped = image[0:434, 350:630]
-        results = self.model.predict(source=cropped, save=True)
-        return results
+    def track_balls(self, stall=0):
+        time.sleep(stall)
+        with threading.Lock():
+            dist_image = self.my_deque[-1]
+        image = self.rm_distortion(dist_image)
+        cropped = image[40:500, 420:570]
+        # cv2.imwrite(f"./Data/Images/result{self.count}.jpg", cropped)
+        # self.count += 1
+        results = self.model.predict(source=cropped, show=False, conf=0.60, hide_labels=True, max_det=4)
+        cv2.imwrite(f"./Data/Images/result{self.count}.jpg", results[0].plot())
+        self.count += 1
+        results = results[0].numpy()
+        boxes = results.boxes.xywh
+        sorted_boxes = boxes[boxes[:, 0].argsort()]
+        ball_levels = sorted_boxes[:, 1]
 
-    def read_fan_gains(self):
-        headers = list(self.fan_gain_df.columns.values)
+        return ball_levels
 
-        tube4_gains = self.fan_gain_df[f"{headers[0]}"].to_list()
-        tube3_gains = self.fan_gain_df[f"{headers[1]}"].to_list()
-        tube2_gains = self.fan_gain_df[f"{headers[2]}"].to_list()
-        tube1_gains = self.fan_gain_df[f"{headers[3]}"].to_list()
-        return tube4_gains, tube3_gains, tube2_gains, tube1_gains
+    def calibrate(self, stall=3):
+        minmax_array = [np.zeros((10, 3)) for i in range(4)]
+        minmax_cam_array = [np.zeros((10, 4)) for i in range(2)]
+        for i in range(10):
+            print(f"Loop number: {i}")
 
-    def read_frames(self, path_to_folder="./Data/Images/"):
+            speed_max, level_min, cam_min = self.fused_sample(0, 0, 0, 100, normalized=False, stall=stall)
+            minmax_array[1][i] = speed_max[0:3]
+            minmax_array[2][i] = level_min
+            if cam_min.size == 4:
+                minmax_cam_array[0][i] = cam_min
 
-        # Read a frame from the camera
-        for i in range(1):
-            ret, frame = self.cap.read()
-            #Remove the distortion
-            if ret:
-                frame = self.rm_distortion(frame)
-            # Perform ball detection/tracking using YOLOv8
-            results = self.track_balls(frame)
-            cv2.imwrite('{0}result{1}.jpg'.format(path_to_folder, self.count), frame)
-            self.count += 1
+            speed_min, level_max, cam_max = self.fused_sample(100, 100, 100, 100, normalized=False, stall=stall)
+            minmax_array[0][i] = speed_min[0:3]
+            minmax_array[3][i] = level_max
+            if cam_max.size == 4:
+                minmax_cam_array[1][i] = cam_max
+
+        print(minmax_cam_array)
+        minmax_mean = [np.mean(array, axis=0) for array in minmax_array]
+        minmax_cam_mean = [np.mean(array, axis = 0) for array in minmax_cam_array]
+        return minmax_mean, minmax_cam_mean
+    
+    def fused_sample(self, gain4, gain3, gain2, gain1, normalized=False, stall=0):
+        future_to_reading = {self.executor.submit(self.track_balls, stall=stall): 'camera',
+        self.executor.submit(sample, self.ns_idx, self.bit_obj,
+        gain4, gain3, gain2, gain1, normalized=False, stall=stall): 'ultrasonic'}
+
+        for future in cf.as_completed(future_to_reading):
+            if future_to_reading[future] == 'camera':
+                cam_array = future.result()
+            elif future_to_reading[future] == 'ultrasonic':
+                fanspeed_array, level_array = future.result()
+        return fanspeed_array, level_array, cam_array
 
     # Ensures that we release the camera feed
     def __del__(self):
-        self.cap.release()
+        self.executor.shutdown()
+
+#------------------------------------------------------------------------#
+#	    Subclass of threading.Thread() for reading frames			     #
+#------------------------------------------------------------------------#
+
+class ImageThread(threading.Thread):
+    def __init__(self, video_url: str, my_deque: deque=deque(maxlen=2)):
+        super().__init__()
+        self._stop_event = threading.Event()
+        self.video_url = video_url
+        self.my_deque = my_deque
+    
+    def stop(self):
+        self._stop_event.set()
+
+    def run(self):
+        cap = cv2.VideoCapture(self.video_url)
+        while not self._stop_event.is_set():
+            ret, dist_image = cap.read()
+            if ret:
+                self.my_deque.append(dist_image)
+        cap.release()
 
 def sample(ns_idx, bit_obj, gain4, gain3, gain2, gain1, normalized=False, stall=0):
     bit_obj.call_method(f"{ns_idx}:set_fanspeeds", gain4, gain3, gain2, gain1, normalized)
     time.sleep(stall)
 
     fanspeed_array = np.array(bit_obj.call_method(f"{ns_idx}:get_fanspeeds"))
+
     level_array = np.array([
         bit_obj.call_method(f"{ns_idx}:get_level", 4),
         bit_obj.call_method(f"{ns_idx}:get_level", 3),
         bit_obj.call_method(f"{ns_idx}:get_level", 2),
     ])
+
     return fanspeed_array, level_array
-
-def calibrate(ns_idx, bit_obj, stall=1):
-    maxmin_array = [np.zeros((10, 3)) for i in range(4)]
-    for i in range(10):
-        print(f"Loop number: {i}")
-        speed_max, level_min = sample(ns_idx, bit_obj, 0, 0, 0, 100, normalized=False, stall=stall)
-        maxmin_array[0][i] = speed_max[0:3]
-        maxmin_array[3][i] = level_min
-
-        speed_min, level_max = sample(ns_idx, bit_obj, 100, 100, 100, 100, normalized=False, stall=stall)
-        maxmin_array[1][i] = speed_min[0:3]
-        maxmin_array[2][i] = level_max
-
-    maxmin_mean = [np.mean(array, axis=0) for array in maxmin_array]
-    return maxmin_mean
 

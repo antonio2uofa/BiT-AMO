@@ -72,6 +72,7 @@ def main():
     mse = round(mean_squared_error(Y_test, results), 5)
     rs = round(r2_score(Y_test, results), 5)
     axs[0].title.set_text(f'RSquare: {rs} MSE: {mse}')
+    plt.savefig('./Data/bit_data/sindy_model_6.pdf')
     plt.show()
 
 if __name__ == '__main__':
