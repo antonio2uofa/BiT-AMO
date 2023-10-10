@@ -1,6 +1,45 @@
 # Balls in Tubes Experiment - Antonio Martin-Ozimek
 
-For all necessary packages please refer to the requirements.txt file and install using pip install -y -r requirements.txt when it is in the current directory. The client is configured to work with the server running on the 32-bit PC. Please ensure the server is running before trying to connect with the client. All data is stored in the Data folder.
+This project aimed to create a software model of a MIMO system. Half of the completed work was put towards transferring the system from running on MATLAB and LabVIEW to running on Python and C++. This was accomplished by directly interfacing with RT-DAC/USB block controlling the system. The interfacing was done in C/C++ using predefined structs created by the company who created the hardware. The C/C++ code was then wrapped in Python code using the c_types library. 
+
+The interfacing computer, the server, was connected to by a client PC using the [OPC-UA](https://github.com/FreeOpcUa/python-opcua) Python library. The client PC collects data from the server and implements multiprocessing to collect sensor data from the Server and collect image data from a live camera feed. The image processing is done mainly through the OpenCV library. The image data is used to track the experiment using a Computer Vision model developed by [Ultralytics](https://www.ultralytics.com/yolo). The model built to track the experiment uses their YOLOv7 algorithm. 
+
+The ML model was used in conjunction with sensors attached to the experiment to create a system model using the optuna Python library. This created a system model that accurately predicted the system's responses to inputs and was able to control the system to a large degree of success.
+
+## Installation
+
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the necessary libraries for this project.
+
+```bash
+pip install -y -r requirements.txt
+```
+
+## Server Usage
+
+To compile the necessary libraries on the server PC run these commands in your terminal in the project directory containing the makefile.
+
+```bash
+make all
+```
+
+To run the server script type this code into the terminal of the server PC.
+
+```bash
+python sync_server.py
+```
+
+## Client Usage
+
+To run the client update the sync_client.py file as necessary and run this command on the client PC:
+
+```bash
+python sync_client.py
+```
+
+## Contributing
+
+Please do not update this repository. Rather, copy this repository and then clone it to work on it locally.
+
 
 # Balls in Tubes Experiment - Dr.Purushottama Rao Dasari
 
